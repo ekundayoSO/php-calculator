@@ -3,8 +3,8 @@
 class Calculator
 {
     // Properties
-    public $num1;
-    public $num2;
+    private float $num1;
+    private float $num2;
 
     // Constructor
     public function __construct($num1, $num2)
@@ -14,25 +14,25 @@ class Calculator
     }
 
     // Addition method
-    public function add()
+    public function add(): float
     {
         return $this->num1 + $this->num2;
     }
 
     // Subtraction method
-    public function subtract()
+    public function subtract(): float
     {
         return $this->num1 - $this->num2;
     }
 
     // Multiplication method
-    public function multiply()
+    public function multiply(): float
     {
         return $this->num1 * $this->num2;
     }
 
     // Division method
-    public function divide()
+    public function divide(): string
     {
         if ($this->num2 == 0) {
             return "Cannot divide by zero";
@@ -50,15 +50,15 @@ class Calculator
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>PHP Calculator</title>
-    
+    <title>Calculator</title>
+
 </head>
 
 <body>
     <h2>PHP Calculator</h2>
     <form action="estimate.php" method="post">
-        <input type="text" name="num1">
-        <input type="text" name="num2">
+        <input type="number" name="num1" required>
+        <input type="number" name="num2" required>
         <select name="operator">
             <option value="add">+</option>
             <option value="subtract">-</option>
@@ -71,11 +71,18 @@ class Calculator
     <?php
 
     // Check if form is submitted
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['operand1']) && isset($_POST['operand2']) && isset($_POST['operator'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['num1']) && isset($_POST['num2']) && isset($_POST['operator'])) {
         // Retrieve values from form
-        $num1 = $_POST['num1'];
-        $num2 = $_POST['num2'];
+        $num1 = filter_var($_POST['num1'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $num2 = filter_var($_POST['num2'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $operator = $_POST['operator'];
+
+        // Validate numeric inputs
+        if (!is_numeric($num1) || !is_numeric($num2)) {
+            echo "Invalid input. Please enter valid numbers.";
+            exit;
+        }
+
 
         // Create Calculator object
         $calc = new Calculator($num1, $num2);
